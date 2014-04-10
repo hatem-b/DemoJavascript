@@ -114,8 +114,16 @@
                     return false;
                 }
             }, { scope: perms.join(',') });
-        }
+        },
 
+     DoPost2MyBlazonPage : function(msg) {
+        FB.api('/450112368380126/feed', 'post', { message: msg }, function (response) {//450112368380126--> id for page www.facebook.com/Myblazon
+            if (!response || response.error) {
+            } else {
+                var posted_message_id = response.id;
+            }
+        });
+    }
 
 
     };
