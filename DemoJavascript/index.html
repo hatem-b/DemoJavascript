@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="/scripts/myblazon/system.js"></script>
+    <script src="/scripts/myblazon/http.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            //console.log(myblazon.system);
+            var http = myblazon.http;
+
+            //var promise = http.get('api/data').done(function () {
+            //    http.post('api/data', { id: 1, name: 'Super Dupper' }).done(function () {
+            //        var entity = http.get('api/data');
+            //        console.log(entity);
+            //    });
+            //});            
+
+            http.post('api/data', { id: 1, name: 'Super Dupper' })
+                .done(function (data) {
+                    console.log(data);
+                    http.get('api/data/' + data.Id).done(function (data) {
+                        console.log(data);
+                    });
+
+                    
+                });
+
+
+            $.when(
+                http.get('api/data/1'),
+                http.get('api/data/2'),
+                http.get('api/data/3'),
+                http.get('api/data/4'),
+                http.get('api/data/5')
+            ).fail(function() {console.log('something failed');});
+        });
+    </script>
+</body>
+</html>
