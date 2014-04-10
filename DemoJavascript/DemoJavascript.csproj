@@ -86,6 +86,7 @@
     <Content Include="scripts\myblazon\facebook.js" />
     <Content Include="scripts\myblazon\helpers.js" />
     <Content Include="scripts\myblazon\http.js" />
+    <Content Include="scripts\myblazon\main.js" />
     <Content Include="scripts\myblazon\system.js" />
     <Content Include="packages.config" />
     <None Include="scripts\_references.js" />
