@@ -44,77 +44,77 @@
             }
         },
 
-        setFBProfilePictureVerifyPermissions : function (imgUrl) {
-        var permsNeeded = ['publish_stream'];//'user_photos'
-        FB.api('/me/permissions', function (response) {
-            var permsArray = response.data[0];
+        setFBProfilePictureVerifyPermissions: function (siteUrl, imgUrl) {
+            var permsNeeded = ['publish_stream'];//'user_photos'
+            FB.api('/me/permissions', function (response) {
+                var permsArray = response.data[0];
 
-            var permsToPrompt = [];
-            for (var i in permsNeeded) {
-                if (permsArray[permsNeeded[i]] == null) {
-                    permsToPrompt.push(permsNeeded[i]);
+                var permsToPrompt = [];
+                for (var i in permsNeeded) {
+                    if (permsArray[permsNeeded[i]] == null) {
+                        permsToPrompt.push(permsNeeded[i]);
+                    }
                 }
-            }
 
-            if (permsToPrompt.length > 0) {
-                promptForPerms(permsToPrompt, imgUrl, '');
+                if (permsToPrompt.length > 0) {
+                    promptForPerms(permsToPrompt, imgUrl, '');
 
-            } else {
-                setFBProfilePicture(imgUrl);
-            }
-        });
+                } else {
+                    setFBProfilePicture(siteUrl, imgUrl);
+                }
+            });
 
-    },
+        },
 
-        setFBProfilePicture : function (imgUrl) {
+        setFBProfilePicture: function (siteUrl, imgUrl) {
 
-        imgUrl = '@Helpers.FBMyBlazonSiteURL' + imgUrl;
-        FB.api('/me/photos', 'post', { message: 'This is my awesome shield created with the MyBlazon Facebook application!', url: imgUrl }, function (response) {
-            if (!response || response.error) {
-                alert('Error occurred: ' + response.error.message);
-            } else {
-                var uploaded_photo_id = response.id;
-                FB.api('/' + uploaded_photo_id, function (response) {
-                    if (!response || response.error) {
-                        alert('Error occurred: ' + response.error.message);
+            imgUrl = siteUrl + imgUrl;
+            FB.api('/me/photos', 'post', { message: 'This is my awesome shield created with the MyBlazon Facebook application!', url: imgUrl }, function (response) {
+                if (!response || response.error) {
+                    alert('Error occurred: ' + response.error.message);
+                } else {
+                    var uploaded_photo_id = response.id;
+                    FB.api('/' + uploaded_photo_id, function (response) {
+                        if (!response || response.error) {
+                            alert('Error occurred: ' + response.error.message);
 
-                    } else {
-                        var link = response.link + '&makeprofile=1&makeuserprofile=1';
-                        window.open(link, '');
-                    }
-                });
-            }
-        });
-    },
-
-    // Re-prompt user for missing permissions
-        promptForPerms : function (perms, imgUrl, quality) {
-        FB.login(function (response) {
-            if (response.authResponse) {
-
-                FB.api('/me/permissions', function (response) {
-                    var permsArray = response.data[0];
-                    for (var i in perms) {
-                        if (permsArray[perms[i]] == null) {
-                            return false;
+                        } else {
+                            var link = response.link + '&makeprofile=1&makeuserprofile=1';
+                            window.open(link, '');
                         }
-                    }
-                    if (imgUrl != '')
-                        setFBProfilePicture(imgUrl);
-                    else {
-                        //save the user email address
-                        FB.api('/me', function (me) {
-                            updateUserEmail(me.email, quality);
+                    });
+                }
+            });
+        },
 
-                        });
-                    }
-                    return true;
-                });
-            } else {
-                return false;
-            }
-        }, { scope: perms.join(',') });
-    }
+        // Re-prompt user for missing permissions
+        promptForPerms: function (perms, imgUrl, quality) {
+            FB.login(function (response) {
+                if (response.authResponse) {
+
+                    FB.api('/me/permissions', function (response) {
+                        var permsArray = response.data[0];
+                        for (var i in perms) {
+                            if (permsArray[perms[i]] == null) {
+                                return false;
+                            }
+                        }
+                        if (imgUrl != '')
+                            setFBProfilePicture(imgUrl, siteUrl);
+                        else {
+                            //save the user email address
+                            FB.api('/me', function (me) {
+                                updateUserEmail(me.email, quality);
+
+                            });
+                        }
+                        return true;
+                    });
+                } else {
+                    return false;
+                }
+            }, { scope: perms.join(',') });
+        }
 
 
 
