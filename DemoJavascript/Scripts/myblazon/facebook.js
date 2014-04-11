@@ -3,43 +3,50 @@
 
     var facebook =
     {
-        InitAsync: function (app_Id) {
-            FB.init({
-                appId: app_Id,
-                status: true,
-                cookie: true,
-                xfbml: true,
-                oauth: true,
-                fileUpload: true
-            });
-            FB.Canvas.setSize({ height: 600 });
-            window.setTimeout("FB.Canvas.setAutoGrow(100)", 500);
-            FB.Canvas.setSize({ height: 600 });
-            FB.Canvas.scrollTo(0, 0);
-            var permsNeeded = ['user_birthday', 'user_hometown', 'user_location'];
+        permsNeeded : ['user_birthday', 'user_hometown', 'user_location'],
+
+        InitLoadAsync: function (app_Id) {
+            window.fbAsyncInit = function () {
+                FB.init({
+                    appId: app_Id,
+                    status: true,
+                    cookie: true,
+                    xfbml: true,
+                    oauth: true,
+                    fileUpload: true
+                });
+                FB.Event.subscribe('auth.authResponseChange', function (response) {
+                    if (response.status === 'connected') {
+                        console.log('Logged in');
+                    } else {
+                        FB.login();
+                    }
+                });
+            };
+            
+            
+
+            (function (d) {
+                var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+                if (d.getElementById(id)) { return; }
+                js = d.createElement('script'); js.id = id; js.async = true;
+                js.src = "//connect.facebook.net/en_US/all.js";
+                ref.parentNode.insertBefore(js, ref);
+            }(document));
         },
 
-        LoadAsync: (function (d) {
-            var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement('script'); js.id = id; js.async = true;
-            js.src = "//connect.facebook.net/en_US/all.js";
-            ref.parentNode.insertBefore(js, ref);
-        }(document)),
 
         OpenPopup: function (href, $popup, hasUserLikedApp, needForceUser2LikeApp) {
             if (hasUserLikedApp == 'true') {
                 location.href = href;
-            }
-            else if (needForceUser2LikeApp == 'true') {
+            } else if (needForceUser2LikeApp == 'true') {
 
                 var window_Width = $(window).width();
                 var popup_left = (window_Width - $popup.width()) / 2;
                 $popup.css('left', popup_left);
                 $popup.fadeIn();
                 $popup.css({ 'z-index': '100', 'visibility': 'visible' });
-            }
-            else {
+            } else {
                 location.href = href;
             }
         },
@@ -57,10 +64,9 @@
                 }
 
                 if (permsToPrompt.length > 0) {
-                    promptForPerms(permsToPrompt, imgUrl, '');
-
+                    facebook.promptForPerms(permsToPrompt, imgUrl, '');
                 } else {
-                    setFBProfilePicture(siteUrl, imgUrl);
+                    facebook.setFBProfilePicture(siteUrl, imgUrl);
                 }
             });
 
@@ -88,7 +94,7 @@
         },
 
         // Re-prompt user for missing permissions
-        promptForPerms: function (perms, imgUrl, quality) {
+        promptForPerms: function (perms, siteUrl,imgUrl, quality) {
             FB.login(function (response) {
                 if (response.authResponse) {
 
@@ -99,9 +105,9 @@
                                 return false;
                             }
                         }
-                        if (imgUrl != '')
-                            setFBProfilePicture(imgUrl, siteUrl);
-                        else {
+                        if (imgUrl != '') {
+                            facebook.setFBProfilePicture(siteUrl,imgUrl);
+                        } else {
                             //save the user email address
                             FB.api('/me', function (me) {
                                 updateUserEmail(me.email, quality);
@@ -116,14 +122,40 @@
             }, { scope: perms.join(',') });
         },
 
-     DoPost2MyBlazonPage : function(msg) {
-        FB.api('/450112368380126/feed', 'post', { message: msg }, function (response) {//450112368380126--> id for page www.facebook.com/Myblazon
-            if (!response || response.error) {
-            } else {
-                var posted_message_id = response.id;
-            }
-        });
-    }
+        DoPost2MyBlazonPage: function (msg) {
+            FB.api('/450112368380126/feed', 'post', { message: msg }, function (response) {//450112368380126--> id for page www.facebook.com/Myblazon
+                if (!response || response.error) {
+                } else {
+                    var posted_message_id = response.id;
+                }
+            });
+        },
+
+
+        feedTest : function()
+        {
+                FB.ui(
+                  {
+                      method: 'feed',
+                      name: 'The Facebook SDK for Javascript',
+                      caption: 'Bringing Facebook to the desktop and mobile web',
+                      description: (
+                         'A small JavaScript library that allows you to harness ' +
+                         'the power of Facebook, bringing the user\'s identity, ' +
+                         'social graph and distribution power to your site.'
+                      ),
+                      link: 'https://developers.facebook.com/docs/reference/javascript/',
+                      picture: 'http://www.fbrell.com/public/f8.jpg'
+                  },
+                  function (response) {
+                      if (response && response.post_id) {
+                          alert('Post was published.');
+                      } else {
+                          alert('Post was not published.');
+                      }
+                  }
+                );
+        }
 
 
     };

@@ -15,7 +15,7 @@
     <AssemblyName>DemoJavascript</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -92,6 +92,7 @@
     <None Include="scripts\_references.js" />
     <Content Include="scripts\myblazon\ui.js" />
     <Content Include="scripts\myblazon\zazzle.js" />
+    <Content Include="test.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <div id="fb-root"></div>
+
+    <script src="/scripts/myblazon/facebook.js"></script>
+    <script>
+        myblazon.facebook.InitLoadAsync('232484643625242');
+
+        function share() {
+            console.log('ok');
+            myblazon.facebook.feedTest();
+        }
+
+        function profilePic()
+        {
+            myblazon.facebook.setFBProfilePictureVerifyPermissions('http://myblazon.com','/images/blason-homepage.png');
+        }
+
+    </script>
+
+    <a href="#" onclick="share()">share</a>
+    <a href="#" onclick="profilePic()">profilePic</a>
+
+</body>
+
+</html>
