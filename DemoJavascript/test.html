@@ -7,23 +7,27 @@
     <div id="fb-root"></div>
 
     <script src="/scripts/myblazon/facebook.js"></script>
+    <script src="/scripts/myblazon/helpers.js"></script>
+    <script src="/scripts/myblazon/main.js"></script>
     <script>
         myblazon.facebook.InitLoadAsync('232484643625242');
 
         function share() {
             console.log('ok');
-            myblazon.facebook.feedTest();
+            //myblazon.facebook.Share();
         }
 
         function profilePic()
         {
-            myblazon.facebook.setFBProfilePictureVerifyPermissions('http://myblazon.com','/images/blason-homepage.png');
+            myblazon.facebook.setFBProfilePictureVerifyPermissions('http://myblazon.com', '/images/blason-homepage.png');            
         }
-
+       
     </script>
 
     <a href="#" onclick="share()">share</a>
     <a href="#" onclick="profilePic()">profilePic</a>
+
+   
 
 </body>
 

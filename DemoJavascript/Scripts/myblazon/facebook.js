@@ -3,7 +3,7 @@
 
     var facebook =
     {
-        permsNeeded : ['user_birthday', 'user_hometown', 'user_location'],
+        permsNeeded: ['user_birthday', 'user_hometown', 'user_location'],
 
         InitLoadAsync: function (app_Id) {
             window.fbAsyncInit = function () {
@@ -23,8 +23,8 @@
                     }
                 });
             };
-            
-            
+
+
 
             (function (d) {
                 var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
@@ -36,7 +36,7 @@
         },
 
 
-        OpenPopup: function (href, $popup, hasUserLikedApp, needForceUser2LikeApp) {
+        OpenPopup: function (urlAction, $popup, hasUserLikedApp, needForceUser2LikeApp) {
             if (hasUserLikedApp == 'true') {
                 location.href = href;
             } else if (needForceUser2LikeApp == 'true') {
@@ -47,11 +47,39 @@
                 $popup.fadeIn();
                 $popup.css({ 'z-index': '100', 'visibility': 'visible' });
             } else {
-                location.href = href;
+                location.href = urlAction;
             }
         },
 
-        setFBProfilePictureVerifyPermissions: function (siteUrl, imgUrl) {
+        VerifyFacebookLogin: function (tryLogin, success)
+        {
+            FB.getLoginStatus(function (response) {
+                if (response.status === 'not_authorized' || response.status === 'unknown')
+                {
+                    if (tryLogin)
+                    {
+                        FB.login(function (response) {
+                            if (response.authResponse) {
+                                if (success && typeof success === "function") {
+                                    success();
+                                }
+                            }
+                        });
+                    }
+                    else { return false; }
+                } 
+                else if ((response.status === 'connected'))
+                {
+                    if (success && typeof success === "function") {
+                        success();
+                    }
+                }
+            });
+        },
+
+        setFBProfilePictureVerifyPermissions: function (siteUrl, imgUrl) {            
+            facebook.VerifyFacebookLogin(true,function(){
+
             var permsNeeded = ['publish_stream'];//'user_photos'
             FB.api('/me/permissions', function (response) {
                 var permsArray = response.data[0];
@@ -64,12 +92,12 @@
                 }
 
                 if (permsToPrompt.length > 0) {
-                    facebook.promptForPerms(permsToPrompt, imgUrl, '');
+                    facebook.promptForPerms(permsToPrompt, function () { facebook.setFBProfilePicture(siteUrl, imgUrl); });
                 } else {
                     facebook.setFBProfilePicture(siteUrl, imgUrl);
                 }
             });
-
+        });
         },
 
         setFBProfilePicture: function (siteUrl, imgUrl) {
@@ -94,7 +122,7 @@
         },
 
         // Re-prompt user for missing permissions
-        promptForPerms: function (perms, siteUrl,imgUrl, quality) {
+        promptForPerms: function (perms, callback) {
             FB.login(function (response) {
                 if (response.authResponse) {
 
@@ -105,14 +133,10 @@
                                 return false;
                             }
                         }
-                        if (imgUrl != '') {
-                            facebook.setFBProfilePicture(siteUrl,imgUrl);
-                        } else {
-                            //save the user email address
-                            FB.api('/me', function (me) {
-                                updateUserEmail(me.email, quality);
-
-                            });
+                        
+                        if (callback && typeof callback === "function")
+                        {
+                            callback();
                         }
                         return true;
                     });
@@ -122,39 +146,39 @@
             }, { scope: perms.join(',') });
         },
 
-        DoPost2MyBlazonPage: function (msg) {
-            FB.api('/450112368380126/feed', 'post', { message: msg }, function (response) {//450112368380126--> id for page www.facebook.com/Myblazon
-                if (!response || response.error) {
-                } else {
-                    var posted_message_id = response.id;
+
+        Share: function (shieldID, $loading_img_share, siteUrl, fbAppUrl, urlAction) {
+            $loading_img_share.show();
+
+            $.ajax({
+                type: "GET",
+                async: true,
+                url: urlAction,
+                success: function (response) {
+                    $loading_img_share.hide();
+
+                    var currentDate = new Date();
+                    var imgURL = siteUrl + '../orna.ashx?blazonid=' + shieldID + '&w=250&f=png' + '&d=' + currentDate.getTime(); //add current date in parameter to force FB to take and display the new image, not the cached one
+                    
+                    FB.getLoginStatus(function (response) {
+                        if (response.status === 'not_authorized' || response.status === 'unknown') {
+                            FB.login(function (response) {
+                                if (response.authResponse) {
+                                    FB.ui({ method: 'feed', name: 'MyBlazon on Facebook', link: fbAppUrl, picture: imgURL, caption: 'Enable the noble you!', description: 'I\'ve just created my personal Shield with MyBlazon.', message: 'Create your personal Coat of Arms!' }); return false;
+                                }
+                            }, { scope: 'publish_stream' });
+
+                        } else
+                            if ((response.status === 'connected')) {
+                                FB.ui({ method: 'feed', name: 'MyBlazon on Facebook', link: fbAppUrl, picture: imgURL, caption: 'Enable the noble you!', description: 'I\'ve just created my personal Shield with MyBlazon.', message: 'Create your personal Coat of Arms!' }); return false;
+                            }
+                    });
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $loading_img_share.hide();
                 }
+
             });
-        },
-
-
-        feedTest : function()
-        {
-                FB.ui(
-                  {
-                      method: 'feed',
-                      name: 'The Facebook SDK for Javascript',
-                      caption: 'Bringing Facebook to the desktop and mobile web',
-                      description: (
-                         'A small JavaScript library that allows you to harness ' +
-                         'the power of Facebook, bringing the user\'s identity, ' +
-                         'social graph and distribution power to your site.'
-                      ),
-                      link: 'https://developers.facebook.com/docs/reference/javascript/',
-                      picture: 'http://www.fbrell.com/public/f8.jpg'
-                  },
-                  function (response) {
-                      if (response && response.post_id) {
-                          alert('Post was published.');
-                      } else {
-                          alert('Post was not published.');
-                      }
-                  }
-                );
         }
 
 

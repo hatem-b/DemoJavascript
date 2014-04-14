@@ -42,32 +42,32 @@
 
 
 
-        ShowHideZazzleParams: function (type, showMyName, showMyValues, newName, urlAction) {
-            var dataString = 'showMyName=' + (showMyName ? 'true' : 'false') + '&showMyVals=' + (showMyValues ? 'true' : 'false') + '&newName=' + newName;
+        //ShowHideZazzleParams: function (type, showMyName, showMyValues, newName, urlAction) {
+        //    var dataString = 'showMyName=' + (showMyName ? 'true' : 'false') + '&showMyVals=' + (showMyValues ? 'true' : 'false') + '&newName=' + newName;
 
-            $.ajax({
-                type: "GET",
-                async: true,
-                url: urlAction,
-                data: dataString,
-                success: function (response) {
-                    var resp = JSON.parse(response); //console.log($(element).attr('onclick'));
-                    if (type == 'S') {
+        //    $.ajax({
+        //        type: "GET",
+        //        async: true,
+        //        url: urlAction,
+        //        data: dataString,
+        //        success: function (response) {
+        //            var resp = JSON.parse(response); //console.log($(element).attr('onclick'));
+        //            if (type == 'S') {
 
-                        location.href = resp[0];
-                    }
-                    if (type == 'O') {
+        //                location.href = resp[0];
+        //            }
+        //            if (type == 'O') {
 
-                        location.href = resp[1];
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert("error");
+        //                location.href = resp[1];
+        //            }
+        //        },
+        //        error: function (xhr, ajaxOptions, thrownError) {
+        //            alert("error");
 
-                }
+        //        }
 
-            });
-        }
+        //    });
+        //}
 
     };
     exports.zazzle = zazzle;

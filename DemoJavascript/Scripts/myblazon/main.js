@@ -1,5 +1,5 @@
 ﻿// MyBlazon JS lib - v0.1.0.0 (semver: 1.0.0-beta)
-var myBlazon;
+var myblazon;
 (function ($, exports) {
     var popup = {
         activate: function ($popup) {
@@ -47,109 +47,78 @@ var myBlazon;
         });
     });
 
-})(window.jQuery, window.myBlazon = window.myBlazon || {});
 
 
-$.validator.setDefaults({
-    ignore: '',
-    submitHandler: function () {
 
-        if ($("#etape").valid()) {
 
-            document.forms["etape"].submit();
-            return false;
-        }
-    }
-});
+    /** DesignBlazon / Index    **/
 
-//DesignBlazon Index
-$(document).ready(function () {
+    /** Actions / Index    **/
 
-    //preload images
-    Image1 = new Image(141, 60)
-    Image1.src = "/images/crea-bouton-suite-on.png"
-    Image2 = new Image(141, 60)
-    Image2.src = "/images/crea-bouton-avant-on.png"
+    var actionsIndex =
+    {
+        saveShieldForDwl: function () {
+            var helmet, crest, mantling, supporters, banner;
+            helmet = crest = mantling = supporters = banner = false;
 
-    $("#etape").validate({
-        errorPlacement: function (error, element) {
-            if (element.attr('type') == 'hidden') {
-                error.css({ 'color': 'red', 'width': '720px', 'display': 'block', 'text-align': 'center' }).insertAfter(element);
-            } else {
-                error.css({ 'color': 'red', 'width': 'auto', 'margin': '0px 0px 0px 320px' }).insertBefore(element.prev());
-            }
+            if ($('#ohelmet').hasClass('active'))
+                helmet = true;
+
+            if ($('#ocrest').hasClass('active'))
+                crest = true;
+
+            if ($('#omantling').hasClass('active'))
+                mantling = true;
+
+            if ($('#osupporters').hasClass('active'))
+                supporters = true;
+
+            var dataString = 'helmet=' + helmet + '&crest=' + crest + '&mantling=' + mantling + '&supporters=' + supporters + '&banner=' + banner;
+
+            return dataString;
         },
-        rules: {
-            value3: {
-                required: true
-            }
 
+        dwlSD: function ($loading_img_sd, urlActionSave, urlActionDownload) {
+            $loading_img_sd.show();
 
-        },
-        messages: {
-            value3: {
-                required: "Please select 3 values"
-            }
-        }
-    });
-    $('.value').click(function () {
+            var dataString = saveShieldForDwl();
 
-        if ($(this).data('dontclick') == 1)
-            return false;
-
-        var nr_values = $('#container_values_chosen div').length;
-        if(nr_values == 2)
-            fillHiddenValueFields($(this).attr('id'));
-
-        if (nr_values < 3) {
-            $(this).fadeTo(1000, 0.2, function () {
-                $(this).css("cursor", "default");
+            $.ajax({
+                type: "POST",
+                async: true,
+                url: urlActionSave,
+                data: dataString,
+                success: function (response) {
+                    $loading_img_sd.hide();
+                    window.location.href = urlActionDownload;
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $loading_img_sd.hide();
+                }
             });
+        },
 
-            $(this).data('dontclick', 1);
+        dwlHD: function ($loading_img_hd, urlActionSave, urlActionDownload) {
+            $loading_img_hd.show();
 
-            var value = $('<div>').attr({ 'class': 'added', 'id': $(this).attr('id') }).css('display', 'none').html($(this).html()).click(function () {
-                var id = $(this).attr('id');
-                emptyHiddenValueFields(); //clear hidden fields for the ids of the selected values
-                $(this).animate({
-                    opacity: 0,
-                    width: '-=100',
-                    'margin-right': '-10',
-                    height: $(this).css('height')
-                }, 1000, function () {
-                    $(this).remove();
+            var dataString = saveShieldForDwl();
 
-                });
+            $.ajax({
+                type: "POST",
+                async: true,
+                url: urlActionSave,
+                data: dataString,
+                success: function (response) {
+                    $loading_img_hd.hide();
 
-                $('#' + id).fadeTo(1000, 1, function () {
-                    $(this).css("cursor", "pointer");
-                    $(this).data('dontclick', 0);
-                });
-            }).appendTo($('#container_values_chosen')).fadeIn(1000);
-
+                    window.location.href = urlActionDownload;
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $loading_img_hd.hide();
+                }
+            });
         }
-    });
-    $(".value").tooltipster();
-});
+    };
+    exports.actionsIndex = actionsIndex;
 
-
-    function emptyHiddenValueFields() {
-        $('#value1').val('');
-        $('#value2').val('');
-        $('#value3').val('');
-    }
-
-function fillHiddenValueFields(value3) {
-    var values = Array;
-    var i = 0;
-    $('#container_values_chosen div').each(function () {
-        values[i++] = $(this).attr('id');
-    });
-
-    $('#value1').val(values[0]);
-    $('#value2').val(values[1]);
-    $('#value3').val(value3);		
-}
-
-
-
+})(window.jQuery, window.myblazon = window.myblazon || {});
